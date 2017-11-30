@@ -1,0 +1,139 @@
+/*#include <gtkmm.h>
+#include <iostream>
+#include <string>
+#include <typeinfo>
+#include <map>
+#include <gdkmm/event.h>
+
+class WindowManager{
+	public:
+		virtual void showView(std::string) = 0;
+		virtual void hideView(std::string) = 0;
+		virtual void exit() = 0;
+};
+
+class ViewController {
+  private:
+		Glib::RefPtr<Gtk::Builder>* builder;
+		std::string windowName;
+	protected:	
+		Gtk::Window* window;
+		WindowManager* winMan;	
+  public:
+		ViewController(Glib::RefPtr<Gtk::Builder>*, WindowManager*, std::string);
+		Gtk::Window* getWindow();
+		bool clickClose(GdkEventAny*);
+};
+
+ViewController::ViewController(Glib::RefPtr<Gtk::Builder>* builder, WindowManager* winMan, std::string windowName){
+	this->builder = builder;
+	(*builder)->get_widget(windowName, window);
+	this->winMan = winMan;
+	this->windowName = windowName;
+	window->signal_delete_event().connect( sigc::mem_fun(this, &ViewController::clickClose) );
+}
+
+bool ViewController::clickClose(GdkEventAny* evt){
+	winMan->hideView(windowName);
+}
+
+Gtk::Window* ViewController::getWindow(){
+	return window;
+}
+
+class LoginController: public ViewController {
+	public:
+		LoginController(Glib::RefPtr<Gtk::Builder>*, WindowManager*, std::string);
+		void login();
+		void exit();
+};
+
+LoginController::LoginController(Glib::RefPtr<Gtk::Builder>* builder, WindowManager* winMan, std::string windowName):ViewController(builder, winMan, windowName){
+	window->set_title("FB Past Post");
+	window->set_default_size(400, 300);	
+	window->set_position(Gtk::WIN_POS_CENTER_ALWAYS);
+
+	Gtk::Button* pButton = nullptr;
+  (*builder)->get_widget("btn_fblogin", pButton);
+	pButton->signal_clicked().connect( sigc::mem_fun(*this, &LoginController::login) );
+}
+
+void LoginController::login(){
+	winMan->showView("posts_window");
+}
+
+class PostController: public ViewController {
+	public:
+		PostController(Glib::RefPtr<Gtk::Builder>*, WindowManager*, std::string);
+		void login();
+};
+
+PostController::PostController(Glib::RefPtr<Gtk::Builder>* builder, WindowManager* winMan, std::string windowName):ViewController(builder, winMan, windowName){
+	window->set_title("Posts");
+	window->set_default_size(400, 300);	
+	window->set_position(Gtk::WIN_POS_CENTER_ALWAYS);
+
+	/*Gtk::Button* pButton = nullptr;
+  (*builder)->get_widget("btn_fblogin", pButton);
+	pButton->signal_clicked().connect( sigc::mem_fun(*this, &LoginController::login) );*
+}
+
+
+class AppManager : public WindowManager {
+	private:
+		Glib::RefPtr<Gtk::Application> app;
+		Glib::RefPtr<Gtk::Builder> builder;
+		std::map<std::string, ViewController*> views;
+	public:
+		AppManager(std::string);
+		void showView(std::string);
+		void hideView(std::string);
+		void exit();
+};
+
+AppManager::AppManager(std::string gladeFile){
+	this->app =  Gtk::Application::create();
+
+  builder = Gtk::Builder::create_from_file(gladeFile);
+	LoginController lc(&builder, this, "start_window");
+  views["start_window"] = &lc;
+
+	PostController pc(&builder, this, "posts_window");
+	views["posts_window"] = &pc;
+
+	app->run(*lc.getWindow());
+}
+
+void AppManager::showView(std::string viewName){
+	std::cout << "Showing " << viewName << std::endl << std::flush;
+	//app->release();
+	app->hold();
+	for(auto v : views){
+		if(v.first != viewName){
+			v.second->getWindow()->hide();
+			std::cout <<  v.first << " " << v.second->getWindow()->get_visible() << std::endl << std::flush;
+		}
+	}
+	views[viewName]->getWindow()->show();
+	views[viewName]->getWindow()->activate_default();
+}
+
+void AppManager::hideView(std::string viewName){
+	views[viewName]->getWindow()->hide();
+	/*std::cout << "Hiding " << viewName << std::flush;		
+	if(viewName == "posts_window")
+		showView("start_window");
+	if(viewName == "start_window")
+		app->release();*
+}
+
+void AppManager::exit(){
+	app->release();
+}
+
+
+int main(int argc, char *argv[])
+{
+	AppManager appMan("fbpastpost.glade");
+	return 0;
+}*/
